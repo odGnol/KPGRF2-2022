@@ -11,11 +11,9 @@ public class Window extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("UHK FIM PGRF : " + this.getClass().getName());
 
-
         panel = new Panel();
 
         add(panel, BorderLayout.CENTER);
-        setVisible(true);
         pack();
 
         setLocationRelativeTo(null);

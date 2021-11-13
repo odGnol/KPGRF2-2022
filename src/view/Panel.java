@@ -54,6 +54,14 @@ public class Panel extends JPanel {
                 repaint();
             }
         }, 0, FPS);
+//        Timer timer = new Timer();
+//        TimerTask task = new TimerTask() {
+//            @Override
+//            public void run() {
+//                repaint();
+//            }
+//        };
+//        timer.schedule(task, 0, FPS);
     }
 
     public void clear() {
