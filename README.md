@@ -1,3 +1,9 @@
-Zdrojový repositář:
+## KPGR1
+> `main` branch
 
-https://gitlab.com/Bruno.Jezek/pgrf1
+## KPGR2
+> `kpgr2` branch
+
+## Zdrojový repositář
+
+> https://gitlab.com/Bruno.Jezek/pgrf1
