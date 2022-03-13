@@ -5,6 +5,7 @@ import java.util.Optional;
 public interface Raster<E> {
 
     default boolean isInsideBounds(int x, int y) {
+// TODO
 //        getWidth()
 //        getHeight()
         return true;

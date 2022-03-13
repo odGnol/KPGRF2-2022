@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Optional;
 
+// řeší obrazovou informaci
+
 public class ImageBuffer implements Raster<Integer> {
 
     private final BufferedImage img;
@@ -27,14 +29,20 @@ public class ImageBuffer implements Raster<Integer> {
 
     @Override
     public Optional<Integer> getElement(int x, int y) {
-        return Optional.empty(); // TODO
-//        return img.getRGB(x, y);
+        // omezení šířky a výšky plátna, ochrana před přetečením
+        if (x >= 0 && y >= 0 && x < getWidth() && y < getHeight()) {
+            return Optional.of(img.getRGB(x, y));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
     public void setElement(int x, int y, Integer color) {
         // ošetřit velikost plátna
-        img.setRGB(x, y, color);
+        if (x >= 0 && y >= 0 && x < getWidth() && y < getHeight()) {
+            img.setRGB(x, y, color);
+        }
     }
 
     @Override
