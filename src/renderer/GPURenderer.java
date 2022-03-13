@@ -1,16 +1,16 @@
 package renderer;
 
-import model.Part;
-import model.Vertex;
+import model.Cast;
+import model.Vrchol;
 import transforms.Mat4;
 
 import java.util.List;
 
 public interface GPURenderer {
 
-    void draw(List<Part> parts, List<Integer> ib, List<Vertex> vb);
+    void nakresli(List<Cast> parts, List<Integer> ib, List<Vrchol> vb);
 
-    void clear();
+    void procisti();
 
     void setModel(Mat4 model); // modelovací (kombinace scale, rotace, posunutí)
 

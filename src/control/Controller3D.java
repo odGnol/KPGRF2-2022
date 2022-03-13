@@ -1,8 +1,8 @@
 package control;
 
-import model.Part;
-import model.TopologyType;
-import model.Vertex;
+import model.Cast;
+import model.TypGeometrickeTopologie;
+import model.Vrchol;
 import rasterize.Raster;
 import renderer.GPURenderer;
 import renderer.Renderer3D;
@@ -17,18 +17,18 @@ public class Controller3D {
 
     private final Panel panel;
     private final GPURenderer renderer;
-    private final Raster<Integer> imageBuffer;
+    private final Raster<Integer> obrazBuffer;
 
     private Mat4 model, projection;
     private Camera camera;
 
-    private List<Vertex> vertexBuffer;
+    private List<Vrchol> vrcholBuffer;
     private List<Integer> indexBuffer;
-    private List<Part> partBuffer;
+    private List<Cast> castBuffer;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
-        this.imageBuffer = panel.getImageBuffer();
+        this.obrazBuffer = panel.getImageBuffer();
         this.renderer = new Renderer3D(panel.getImageBuffer());
 
         initBuffers();
@@ -39,20 +39,20 @@ public class Controller3D {
 //        imageBuffer.setElement(50, 50, Color.YELLOW.getRGB());
 //        panel.repaint();
 
-        display();
+        zobraz();
     }
 
     private void initBuffers() {
-        vertexBuffer = new ArrayList<>();
-        vertexBuffer.add(new Vertex(new Point3D(-1, -1, 1), new Col(1.0, 1.0, 0.0)));
-        vertexBuffer.add(new Vertex(new Point3D(1, -1, 1), new Col(255, 255, 0)));
-        vertexBuffer.add(new Vertex(new Point3D(1, 1, 1), new Col(Color.BLUE.getRGB())));
-        vertexBuffer.add(new Vertex(new Point3D(-1, 1, 1), new Col(Color.GREEN.getRGB())));
+        vrcholBuffer = new ArrayList<>();
+        vrcholBuffer.add(new Vrchol(new Point3D(-1, -1, 1), new Col(1.0, 1.0, 0.0)));
+        vrcholBuffer.add(new Vrchol(new Point3D(1, -1, 1), new Col(255, 255, 0)));
+        vrcholBuffer.add(new Vrchol(new Point3D(1, 1, 1), new Col(Color.BLUE.getRGB())));
+        vrcholBuffer.add(new Vrchol(new Point3D(-1, 1, 1), new Col(Color.GREEN.getRGB())));
 
-        vertexBuffer.add(new Vertex(new Point3D(-1, -1, -1), new Col(Color.ORANGE.getRGB())));
-        vertexBuffer.add(new Vertex(new Point3D(1, -1, -1), new Col(Color.CYAN.getRGB())));
-        vertexBuffer.add(new Vertex(new Point3D(1, 1, -1), new Col(Color.RED.getRGB())));
-        vertexBuffer.add(new Vertex(new Point3D(-1, 1, -1), new Col(Color.WHITE.getRGB())));
+        vrcholBuffer.add(new Vrchol(new Point3D(-1, -1, -1), new Col(Color.ORANGE.getRGB())));
+        vrcholBuffer.add(new Vrchol(new Point3D(1, -1, -1), new Col(Color.CYAN.getRGB())));
+        vrcholBuffer.add(new Vrchol(new Point3D(1, 1, -1), new Col(Color.RED.getRGB())));
+        vrcholBuffer.add(new Vrchol(new Point3D(-1, 1, -1), new Col(Color.WHITE.getRGB())));
 
         indexBuffer = new ArrayList<>();
         indexBuffer.add(0);
@@ -68,8 +68,8 @@ public class Controller3D {
 
         // TODO chybí dalších 5 stěn krychle pro index buffer
 
-        partBuffer = new ArrayList<>();
-        partBuffer.add(new Part(TopologyType.TRIANGLE, 0, 2)); // FIXME count bude 12 až bude celý IB
+        castBuffer = new ArrayList<>();
+        castBuffer.add(new Cast(TypGeometrickeTopologie.TROJUHELNIK, 0, 2)); // FIXME count bude 12 až bude celý IB
         // teď by byl error, protože je málo indexů
     }
 
@@ -84,20 +84,20 @@ public class Controller3D {
 
         projection = new Mat4PerspRH(
                 Math.PI / 3,
-                imageBuffer.getHeight() / (float) imageBuffer.getWidth(),
+                obrazBuffer.getHeight() / (float) obrazBuffer.getWidth(),
                 0.5,
                 50
         );
     }
 
-    private void display() {
-        renderer.clear();
+    private void zobraz() {
+        renderer.procisti();
 
         renderer.setModel(model);
         renderer.setView(camera.getViewMatrix());
         renderer.setProjection(projection);
 
-        renderer.draw(partBuffer, indexBuffer, vertexBuffer);
+        renderer.nakresli(castBuffer, indexBuffer, vrcholBuffer);
 
         // necessary to manually request update of the UI
         panel.repaint();

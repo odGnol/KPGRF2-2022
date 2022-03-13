@@ -6,12 +6,12 @@ import java.util.Optional;
 
 // řeší obrazovou informaci
 
-public class ImageBuffer implements Raster<Integer> {
+public class ObrazBuffer implements Raster<Integer> {
 
     private final BufferedImage img;
     private int clearColor;
 
-    public ImageBuffer(int width, int height) {
+    public ObrazBuffer(int width, int height) {
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 

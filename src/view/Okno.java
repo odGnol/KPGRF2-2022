@@ -3,13 +3,13 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
-public class Window extends JFrame {
+public class Okno extends JFrame {
 
     private final Panel panel;
 
-    public Window() {
+    public Okno() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("UHK FIM KPGR2 : " + this.getClass().getName());
+        setTitle("UHK FIM KPGR2 - Long Do : " + this.getClass().getName());
 
         panel = new Panel();
 
