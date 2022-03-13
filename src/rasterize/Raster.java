@@ -1,18 +1,26 @@
 package rasterize;
 
-public interface Raster {
+import java.util.Optional;
+
+public interface Raster<E> {
+
+    default boolean isInsideBounds(int x, int y) {
+//        getWidth()
+//        getHeight()
+        return true;
+    }
 
     /**
-     * Clear canvas
+     * Clear raster
      */
     void clear();
 
     /**
-     * Set clear color
+     * Set clear value
      *
-     * @param clearColor clear color
+     * @param clearValue clear value
      */
-    void setClearColor(int clearColor);
+    void setClearValue(E clearValue);
 
     /**
      * Get horizontal size
@@ -29,20 +37,20 @@ public interface Raster {
     int getHeight();
 
     /**
-     * Get pixel color at [x,y] position
+     * Get element value at [x,y] position
      *
      * @param x horizontal coordinate
      * @param y vertical coordinate
-     * @return pixel color
+     * @return element value
      */
-    int getPixel(int x, int y);
+    Optional<E> getElement(int x, int y);
 
     /**
-     * Set pixel color at [x,y] position
+     * Set element value at [x,y] position
      *
      * @param x     horizontal coordinate
      * @param y     vertical coordinate
-     * @param color pixel color
+     * @param value element value
      */
-    void setPixel(int x, int y, int color);
+    void setElement(int x, int y, E value);
 }

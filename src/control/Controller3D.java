@@ -1,67 +1,110 @@
 package control;
 
-import model3d.Cube;
-import model3d.Scene;
+import model.Part;
+import model.TopologyType;
+import model.Vertex;
 import rasterize.Raster;
 import renderer.GPURenderer;
 import renderer.Renderer3D;
 import transforms.*;
 import view.Panel;
 
-public class Controller3D implements Controller {
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
-    private GPURenderer renderer;
-    private Raster raster;
+public class Controller3D {
 
-    private Mat4 projection;
+    private final Panel panel;
+    private final GPURenderer renderer;
+    private final Raster<Integer> imageBuffer;
+
+    private Mat4 model, projection;
     private Camera camera;
 
-    private Scene mainScene, axisScene;
+    private List<Vertex> vertexBuffer;
+    private List<Integer> indexBuffer;
+    private List<Part> partBuffer;
 
     public Controller3D(Panel panel) {
-        this.raster = panel.getRaster();
-        this.renderer = new Renderer3D(raster);
+        this.panel = panel;
+        this.imageBuffer = panel.getImageBuffer();
+        this.renderer = new Renderer3D(panel.getImageBuffer());
+
+        initBuffers();
+        initMatrices();
         initListeners(panel);
 
-        camera = new Camera()
-                .withPosition(new Vec3D(0.8, -5, 2))
-                .withAzimuth(Math.toRadians(90))
-                .withZenith(Math.toRadians(-15));
+        // test draw
+//        imageBuffer.setElement(50, 50, Color.YELLOW.getRGB());
+//        panel.repaint();
 
-//        camera = camera.backward(0.5);
-//        camera = camera.left(1);
-//        camera.getViewMatrix()
-//        camera = camera.addAzimuth();
-//        camera = camera.addZenith();
-
-
-        projection = new Mat4PerspRH(
-                Math.PI / 3,
-                raster.getHeight() / (float) raster.getWidth(),
-                0.1,
-                50.0
-        );
-//        new Mat4OrthoRH(20, 20, 0.1, 50.0); // nutné také vzít v potaz poměry stran okna (20 a 20)
-
-        mainScene = new Scene();
-        mainScene.getSolids().add(new Cube());
         display();
     }
 
-    private void display() {
-        raster.clear();
+    private void initBuffers() {
+        vertexBuffer = new ArrayList<>();
+        vertexBuffer.add(new Vertex(new Point3D(-1, -1, 1), new Col(1.0, 1.0, 0.0)));
+        vertexBuffer.add(new Vertex(new Point3D(1, -1, 1), new Col(255, 255, 0)));
+        vertexBuffer.add(new Vertex(new Point3D(1, 1, 1), new Col(Color.BLUE.getRGB())));
+        vertexBuffer.add(new Vertex(new Point3D(-1, 1, 1), new Col(Color.GREEN.getRGB())));
 
-//        renderer.setModel();
+        vertexBuffer.add(new Vertex(new Point3D(-1, -1, -1), new Col(Color.ORANGE.getRGB())));
+        vertexBuffer.add(new Vertex(new Point3D(1, -1, -1), new Col(Color.CYAN.getRGB())));
+        vertexBuffer.add(new Vertex(new Point3D(1, 1, -1), new Col(Color.RED.getRGB())));
+        vertexBuffer.add(new Vertex(new Point3D(-1, 1, -1), new Col(Color.WHITE.getRGB())));
+
+        indexBuffer = new ArrayList<>();
+        indexBuffer.add(0);
+        indexBuffer.add(1);
+        indexBuffer.add(2);
+
+        indexBuffer.add(0);
+        indexBuffer.add(2);
+        indexBuffer.add(3);
+
+//        indexBuffer.addAll(Arrays.asList(0, 1, 2));
+//        indexBuffer.addAll(Arrays.asList(0, 1, 3));
+
+        // TODO chybí dalších 5 stěn krychle pro index buffer
+
+        partBuffer = new ArrayList<>();
+        partBuffer.add(new Part(TopologyType.TRIANGLE, 0, 2)); // FIXME count bude 12 až bude celý IB
+        // teď by byl error, protože je málo indexů
+    }
+
+    private void initMatrices() {
+        model = new Mat4Identity();
+
+        Vec3D e = new Vec3D(1.5, -5, 2);
+        camera = new Camera()
+                .withPosition(e)
+                .withAzimuth(Math.toRadians(90))
+                .withZenith(Math.toRadians(-15));
+
+        projection = new Mat4PerspRH(
+                Math.PI / 3,
+                imageBuffer.getHeight() / (float) imageBuffer.getWidth(),
+                0.5,
+                50
+        );
+    }
+
+    private void display() {
+        renderer.clear();
+
+        renderer.setModel(model);
         renderer.setView(camera.getViewMatrix());
         renderer.setProjection(projection);
-        renderer.draw(mainScene);
 
-        renderer.setModel(new Mat4Identity());
-//        renderer.draw(axisScene);
+        renderer.draw(partBuffer, indexBuffer, vertexBuffer);
+
+        // necessary to manually request update of the UI
+        panel.repaint();
     }
 
-    @Override
-    public void initListeners(Panel panel) {
-
+    private void initListeners(Panel panel) {
+        // TODO
     }
+
 }

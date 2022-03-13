@@ -9,7 +9,7 @@ public class Window extends JFrame {
 
     public Window() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("UHK FIM PGRF : " + this.getClass().getName());
+        setTitle("UHK FIM KPGR2 : " + this.getClass().getName());
 
         panel = new Panel();
 
@@ -18,9 +18,9 @@ public class Window extends JFrame {
 
         setLocationRelativeTo(null);
 
-        // lepší až na konci, aby to neukradla nějaká komponenta v případně složitějším UI
+        // better at the end so that the focus is not taken by another component in a possibly more complex UI
         panel.setFocusable(true);
-        panel.grabFocus(); // důležité pro pozdější ovládání z klávesnice
+        panel.grabFocus(); // important for keyboard control
     }
 
     public Panel getPanel() {
