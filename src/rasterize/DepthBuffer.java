@@ -4,12 +4,12 @@ import java.util.Optional;
 
 // řeší hloubkovou informaci
 
-public class HloubkaBuffer implements Raster<Double> {
+public class DepthBuffer implements Raster<Double> {
 
     private final double[][] zData;
     private double clearValue;
 
-    public HloubkaBuffer(int width, int height) {
+    public DepthBuffer(int width, int height) {
         if (width <= 0 || height <= 0) {
             throw new RuntimeException("Zero or negative width or height");
         }

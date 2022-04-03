@@ -1,20 +1,20 @@
 package view;
 
 import rasterize.Raster;
-import rasterize.ObrazBuffer;
+import rasterize.ImageBuffer;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class Panel extends JPanel {
 
-    private final ObrazBuffer imageBuffer;
+    private final ImageBuffer imageBuffer;
 
     private static final int SIRKA = 800, VYSKA = 600;
 
     Panel() {
         setPreferredSize(new Dimension(SIRKA, VYSKA));
-        imageBuffer = new ObrazBuffer(SIRKA, VYSKA);
+        imageBuffer = new ImageBuffer(SIRKA, VYSKA);
         imageBuffer.setClearValue(Color.BLACK.getRGB());
     }
 

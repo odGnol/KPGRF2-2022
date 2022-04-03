@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface GPURenderer {
 
-    void nakresli(List<Cast> parts, List<Integer> ib, List<Vrchol> vb);
+    void nakresli(List<Cast> casti, List<Integer> ib, List<Vrchol> vb);
 
     void procisti();
 
