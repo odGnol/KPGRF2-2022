@@ -137,6 +137,10 @@ public class Renderer3D implements GPURenderer {
         }
     }
 
+    private void vytvorVrcholZDehomogBodu(Vrchol dA, Vrchol dB, Vrchol dC) {
+
+    }
+
     private void nakresliTrojuhelnik(Vrchol a, Vrchol b, Vrchol c) {
         // 1. dehomogenizace
         Optional<Vrchol> dA = a.dehomog();
@@ -146,49 +150,45 @@ public class Renderer3D implements GPURenderer {
         // zahodit trojúhelník, pokud některý vrchol má w==0 (nelze provést dehomogenizaci)
         if (dA.isEmpty() || dB.isEmpty() || dC.isEmpty()) return;
 
-        Vrchol v1 = dA.get();
-        Vrchol v2 = dB.get();
-        Vrchol v3 = dC.get();
-
         // 2. transformace do okna
-        Vec3D vec3D1 = transformujDoOkna(v1);
-        Vrchol aa = new Vrchol(new Point3D(vec3D1), v1.getBarva());
+        Vec3D vec3D1 = transformujDoOkna(dA.get());
+        Vrchol v1 = vytvorVrcholZVektoruABarvy(vec3D1, dA.get().getBarva());
 
-        Vec3D vec3D2 = transformujDoOkna(v2);
-        Vrchol bb = new Vrchol(new Point3D(vec3D2), v2.getBarva());
+        Vec3D vec3D2 = transformujDoOkna(dB.get());
+        Vrchol v2 = vytvorVrcholZVektoruABarvy(vec3D2, dB.get().getBarva());
 
-        Vec3D vec3D3 = transformujDoOkna(v3);
-        Vrchol cc = new Vrchol(new Point3D(vec3D3), v3.getBarva());
+        Vec3D vec3D3 = transformujDoOkna(dC.get());
+        Vrchol v3 = vytvorVrcholZVektoruABarvy(vec3D3, dC.get().getBarva());
 
         // 3. seřazení podle Y
-        if (aa.getY() > bb.getY()) {
-            Vrchol temp = aa;
-            aa = bb;
-            bb = temp;
+        if (v1.getY() > v2.getY()) {
+            Vrchol docasne = v1;
+            v1 = v2;
+            v2 = docasne;
         }
-        if (bb.getY() > cc.getY()) {
-            Vrchol temp = bb;
-            bb = cc;
-            cc = temp;
+        if (v2.getY() > v3.getY()) {
+            Vrchol docasne = v2;
+            v2 = v3;
+            v3 = docasne;
         }
-        if (aa.getY() > bb.getY()) {
-            Vrchol temp = aa;
-            aa = bb;
-            bb = temp;
+        if (v1.getY() > v2.getY()) {
+            Vrchol docasne = v1;
+            v1 = v2;
+            v2 = docasne;
         }
 
         // 4. interpolace podle Y
         // slides 129, 130
         // 1. for cyklus A->B
-        int yStart = Math.max(0, (int) aa.getY() + 1);
-        double yEnd = Math.min(imageBuffer.getHeight() - 1, bb.getY());
+        int yStart = Math.max(0, (int) v1.getY() + 1);
+        double yEnd = Math.min(imageBuffer.getHeight() - 1, v2.getY());
 
         for (int y = yStart; y <= yEnd; y++) {
-            double t1 = (y - aa.getY()) / (bb.getY() - aa.getY());
-            Vrchol d = aa.mul(1 - t1).add(bb.mul(t1));
+            double t1 = (y - v1.getY()) / (v2.getY() - v1.getY());
+            Vrchol d = v1.mul(1 - t1).add(v2.mul(t1));
 
-            double t2 = (y - aa.getY()) / (cc.getY() - aa.getY());
-            Vrchol e = aa.mul(1 - t2).add(cc.mul(t2));
+            double t2 = (y - v1.getY()) / (v3.getY() - v1.getY());
+            Vrchol e = v1.mul(1 - t2).add(v3.mul(t2));
 
             naplnUsecku(d, e);
         }
@@ -229,6 +229,10 @@ public class Renderer3D implements GPURenderer {
                 .add(new Vec3D(1, 1, 0)) // (0, 0) je uprostřed a my chceme, aby bylo vlevo nahoře
                 .mul(new Vec3D(imageBuffer.getWidth() / 2.0, imageBuffer.getHeight() / 2.0, 1));
         // máme <0;2> -> vynásobíme polovinou velikosti plátna
+    }
+
+    private Vrchol vytvorVrcholZVektoruABarvy(Vec3D vektor3D, Col barva) {
+        return new Vrchol(new Point3D(vektor3D), barva);
     }
 
     @Override
