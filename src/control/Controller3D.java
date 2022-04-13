@@ -1,7 +1,8 @@
 package control;
 
 import model.Cast;
-import model.TypGeometrickeTopologie;
+import model.Krychle;
+import model.Objekt;
 import model.Vrchol;
 import rasterize.Raster;
 import renderer.GPURenderer;
@@ -9,7 +10,6 @@ import renderer.Renderer3D;
 import transforms.*;
 import view.Panel;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,52 +25,26 @@ public class Controller3D {
     private List<Vrchol> vrcholBuffer;
     private List<Integer> indexBuffer;
     private List<Cast> castBuffer;
+    private final List<Objekt> objektBuffer;
+
+    private Krychle krychle;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
         this.obrazBuffer = panel.getImageBuffer();
         this.renderer = new Renderer3D(panel.getImageBuffer());
 
+        objektBuffer = new ArrayList<>();
+
         initBuffers();
         initMatrices();
         initListeners(panel);
-
-        // test draw
-//        imageBuffer.setElement(50, 50, Color.YELLOW.getRGB());
-//        panel.repaint();
 
         zobraz();
     }
 
     private void initBuffers() {
-        vrcholBuffer = new ArrayList<>();
-        vrcholBuffer.add(new Vrchol(new Point3D(-1, -1, 1), new Col(1.0, 1.0, 0.0)));
-        vrcholBuffer.add(new Vrchol(new Point3D(1, -1, 1), new Col(255, 255, 0)));
-        vrcholBuffer.add(new Vrchol(new Point3D(1, 1, 1), new Col(Color.BLUE.getRGB())));
-        vrcholBuffer.add(new Vrchol(new Point3D(-1, 1, 1), new Col(Color.GREEN.getRGB())));
-
-        vrcholBuffer.add(new Vrchol(new Point3D(-1, -1, -1), new Col(Color.ORANGE.getRGB())));
-        vrcholBuffer.add(new Vrchol(new Point3D(1, -1, -1), new Col(Color.CYAN.getRGB())));
-        vrcholBuffer.add(new Vrchol(new Point3D(1, 1, -1), new Col(Color.RED.getRGB())));
-        vrcholBuffer.add(new Vrchol(new Point3D(-1, 1, -1), new Col(Color.WHITE.getRGB())));
-
-        indexBuffer = new ArrayList<>();
-        indexBuffer.add(0);
-        indexBuffer.add(1);
-        indexBuffer.add(2);
-
-        indexBuffer.add(0);
-        indexBuffer.add(2);
-        indexBuffer.add(3);
-
-//        indexBuffer.addAll(Arrays.asList(0, 1, 2));
-//        indexBuffer.addAll(Arrays.asList(0, 1, 3));
-
-        // TODO chybí dalších 5 stěn krychle pro index buffer
-
-        castBuffer = new ArrayList<>();
-        castBuffer.add(new Cast(TypGeometrickeTopologie.TROJUHELNIK, 0, 2)); // FIXME count bude 12 až bude celý IB
-        // teď by byl error, protože je málo indexů
+        objektBuffer.add(new Krychle());
     }
 
     private void initMatrices() {
@@ -97,7 +71,10 @@ public class Controller3D {
         renderer.setView(camera.getViewMatrix());
         renderer.setProjection(projection);
 
-        renderer.nakresli(castBuffer, indexBuffer, vrcholBuffer);
+        for (int i = 0; i < objektBuffer.toArray().length; i++) {
+            renderer.setModel(objektBuffer.get(i).getModel());
+            renderer.nakresli(objektBuffer.get(i).getCasti(), objektBuffer.get(i).getIndexy(), objektBuffer.get(i).getVrcholy());
+        }
 
         // necessary to manually request update of the UI
         panel.repaint();
