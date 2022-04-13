@@ -44,7 +44,23 @@ public class Renderer3D implements GPURenderer {
                     pripravTrojuhelnik(v1, v2, v3);
                 }
             } else if (topologyType == TypGeometrickeTopologie.USECKA) {
-                // TODO
+                // Doplnění: úsečka
+                for (int i = index; i <= pocet * 2; i += 2) {
+                    Integer i1 = ib.get(i);
+                    Integer i2 = ib.get(i + 1);
+
+                    Vrchol v1 = vb.get(i1);
+                    Vrchol v2 = vb.get(i2);
+                    pripravUsecku(v1, v2);
+                }
+            } else if (topologyType == TypGeometrickeTopologie.BOD) {
+                for (int i = index; i <= pocet; i++) {
+                    Integer i1 = ib.get(i);
+
+                    Vrchol v1 = vb.get(i1);
+
+                    pripravBod(v1);
+                }
             } // ...
         }
     }
@@ -123,7 +139,7 @@ public class Renderer3D implements GPURenderer {
         } else if (c.getZ() < 0) {
             // 2 krát se zavolá funkce nakresliTrojuhelnik()
 
-            double t1 = - a.getZ() / c.getZ() - a.getZ();
+            double t1 = -a.getZ() / c.getZ() - a.getZ();
             Vrchol ac = a.mul(1 - t1).add(c.mul(t1));
 
             double t2 = -b.getZ() / c.getZ() - b.getZ();
@@ -135,10 +151,6 @@ public class Renderer3D implements GPURenderer {
             // vidíme celý trojúhelník
             nakresliTrojuhelnik(a, b, c);
         }
-    }
-
-    private void vytvorVrcholZDehomogBodu(Vrchol dA, Vrchol dB, Vrchol dC) {
-
     }
 
     private void nakresliTrojuhelnik(Vrchol a, Vrchol b, Vrchol c) {
@@ -193,7 +205,121 @@ public class Renderer3D implements GPURenderer {
             naplnUsecku(d, e);
         }
         // 2. for cyklus B->C
-        // TODO
+        // TODO Doplnění: cyklus interpolace po ose X
+
+        int xStart = Math.max(0, (int) v1.getX() + 1);
+        double xEnd = Math.min(imageBuffer.getWidth() - 1, v2.getX());
+
+        for (int x = xStart; x <= xEnd; x++) {
+            double t3 = (x - v1.getX()) / (v2.getX() - v1.getX());
+            Vrchol f = v1.mul(1 - t3).add(v2.mul(t3));
+
+            double t4 = (x - v1.getX()) / (v3.getX() - v1.getX());
+            Vrchol g = v1.mul(1 - t4).add(v3.mul(t4));
+
+            naplnUsecku(f, g);
+        }
+    }
+
+    private void pripravUsecku(Vrchol v1, Vrchol v2) {
+        // 1. transformace vrcholů
+        Vrchol a = new Vrchol(
+                v1.getBod().mul(model).mul(view).mul(projection),
+                v1.getBarva()
+        );
+        Vrchol b = new Vrchol(
+                v2.getBod().mul(model).mul(view).mul(projection),
+                v2.getBarva()
+        );
+
+        // 2. ořezání
+
+        // podle podle osy x
+        if (a.getX() > a.getW() && b.getX() > b.getW()) return; // úsečka je moc vpravo
+        if (a.getX() < -a.getW() && b.getX() < -b.getW()) return; // moc vlevo
+
+        // podle osy y
+        if (a.getY() > a.getW() && b.getY() > b.getW()) return; // moc nahoře
+        if (a.getY() < -a.getW() && b.getY() < -b.getW()) return; // moc dole
+
+        // podle osy z
+        if (a.getZ() > a.getW() && b.getZ() > b.getW()) return; // moc vzadu/daleko (?)
+        if (a.getZ() < 0 && b.getZ() < 0) return; // je za námi
+
+        // 3. seřazení podle Z
+        if (a.getZ() < b.getZ()) {
+            var docasne = a;
+            a = b;
+            b = docasne;
+        }
+
+        // 4. ořezání podle hrany Z
+        if (a.getZ() < 0) {
+            // A.Z je menší než nula = > všechny Z jsou menší než nula => není co zobrazit
+        } else if (b.getZ() < 0) {
+            // vrchol A je vidět, vrchol B není vidět
+            // odečíst minimum: 0 - a.getZ() | dělit rozsahem: b.getZ() - a.getZ()
+            double t1 = (0 - a.getZ()) / (b.getZ() - a.getZ());
+            Vrchol ab = a.mul(1 - t1).add(b.mul(t1));
+
+            nakresliUsecku(a, ab);
+        } else {
+            // vidíme celou úsečku
+            nakresliUsecku(a, b);
+        }
+    }
+
+    private void nakresliUsecku(Vrchol a, Vrchol b) {
+        // 1. dehomogenizace
+        Optional<Vrchol> dA = a.dehomog();
+        Optional<Vrchol> dB = b.dehomog();
+
+        // zahodit trojúhelník, pokud některý vrchol má w==0 (nelze provést dehomogenizaci)
+        if (dA.isEmpty() || dB.isEmpty()) return;
+
+        // 2. transformace do okna
+        Vec3D vec3D1 = transformujDoOkna(dA.get());
+        Vrchol v1 = vytvorVrcholZVektoruABarvy(vec3D1, dA.get().getBarva());
+
+        Vec3D vec3D2 = transformujDoOkna(dB.get());
+        Vrchol v2 = vytvorVrcholZVektoruABarvy(vec3D2, dB.get().getBarva());
+
+        var x1 = v1.getX();
+        var y1 = v1.getY();
+        var x2 = v2.getX();
+        var y2 = v2.getX();
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+
+        if (Math.abs(dy) < Math.abs(dx)) {
+            if (x2 < x1) {
+                var docasne = v1;
+                v1 = v2;
+                v2 = docasne;
+            }
+
+            // 2. interpolace po ose X
+            int xStart = Math.max(0, (int) v1.getX() + 1);
+            double xEnd = Math.min(imageBuffer.getWidth() - 1, v2.getX());
+
+            for (int x = xStart; x <= xEnd; x++) {
+                double t1 = (x - v1.getX()) / (v2.getX() - v1.getX());
+                Vrchol ff = v1.mul(1 - t1).add(v2.mul(t1));
+                nakresliPixel((int) Math.round(ff.getX()), (int) Math.round(ff.getY()), ff.getZ(), ff.getBarva());
+            }
+        } else {
+            if (y2 < y1) {
+                // 4. interpolace podle Y
+                int yStart = Math.max(0, (int) v1.getY() + 1);
+                double yEnd = Math.min(imageBuffer.getHeight() - 1, v2.getY());
+
+                for (int y = yStart; y <= yEnd; y++) {
+                    double t1 = (y - v1.getY()) / (v2.getY() - v1.getY());
+                    Vrchol dd = v1.mul(1 - t1).add(v2.mul(t1));
+                    nakresliPixel((int) Math.round(dd.getX()), (int) Math.round(dd.getY()), dd.getZ(), dd.getBarva());
+                }
+            }
+        }
     }
 
     private void naplnUsecku(Vrchol a, Vrchol b) {
@@ -211,6 +337,27 @@ public class Renderer3D implements GPURenderer {
             Vrchol ab = a.mul(1 - t).add(b.mul(t));
 
             nakresliPixel(x, (int) Math.round(ab.getY()), ab.getZ(), ab.getBarva());
+        }
+    }
+
+    private void pripravBod(Vrchol v1) {
+        Vrchol a = new Vrchol(
+                v1.getBod().mul(model).mul(view).mul(projection),
+                v1.getBarva()
+        );
+
+        if (a.getX() > a.getW()) return; // bod je moc vpravo
+        if (a.getX() < -a.getW()) return; // moc vlevo
+
+        if (a.getY() > a.getW()) return; // moc nahoře
+        if (a.getY() < -a.getW()) return; // moc dole
+
+        if (a.getZ() > a.getW()) return; // moc vzadu/daleko (?)
+        if (a.getZ() < 0) {
+            // je za námi
+        } else {
+            // vidíme celou úsečku
+            nakresliPixel((int) a.getX(), (int) a.getY(), a.getZ(), a.getBarva());
         }
     }
 
