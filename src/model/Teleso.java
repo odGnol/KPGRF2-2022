@@ -6,7 +6,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Objekt {
+public abstract class Teleso {
 
     //seznam vrcholů - Point3D
     final List<Vrchol> vrcholBuffer = new ArrayList<>();

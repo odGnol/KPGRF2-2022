@@ -2,7 +2,7 @@ package control;
 
 import model.Cast;
 import model.Krychle;
-import model.Objekt;
+import model.Teleso;
 import model.Vrchol;
 import rasterize.Raster;
 import renderer.GPURenderer;
@@ -17,7 +17,7 @@ public class Controller3D {
 
     private final Panel panel;
     private final GPURenderer renderer;
-    private final Raster<Integer> obrazBuffer;
+    private final Raster<Integer> imageBuffer;
 
     private Mat4 model, projection;
     private Camera camera;
@@ -25,16 +25,16 @@ public class Controller3D {
     private List<Vrchol> vrcholBuffer;
     private List<Integer> indexBuffer;
     private List<Cast> castBuffer;
-    private final List<Objekt> objektBuffer;
+    private final List<Teleso> telesoBuffer;
 
     private Krychle krychle;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
-        this.obrazBuffer = panel.getImageBuffer();
+        this.imageBuffer = panel.getImageBuffer();
         this.renderer = new Renderer3D(panel.getImageBuffer());
 
-        objektBuffer = new ArrayList<>();
+        telesoBuffer = new ArrayList<>();
 
         initBuffers();
         initMatrices();
@@ -44,7 +44,7 @@ public class Controller3D {
     }
 
     private void initBuffers() {
-        objektBuffer.add(new Krychle());
+        telesoBuffer.add(new Krychle());
     }
 
     private void initMatrices() {
@@ -53,12 +53,12 @@ public class Controller3D {
         Vec3D e = new Vec3D(1.5, -5, 2);
         camera = new Camera()
                 .withPosition(e)
-                .withAzimuth(Math.toRadians(90))
+                .withAzimuth(Math.toRadians(100))
                 .withZenith(Math.toRadians(-15));
 
         projection = new Mat4PerspRH(
                 Math.PI / 3,
-                obrazBuffer.getHeight() / (float) obrazBuffer.getWidth(),
+                imageBuffer.getHeight() / (float) imageBuffer.getWidth(),
                 0.5,
                 50
         );
@@ -71,9 +71,9 @@ public class Controller3D {
         renderer.setView(camera.getViewMatrix());
         renderer.setProjection(projection);
 
-        for (int i = 0; i < objektBuffer.toArray().length; i++) {
-            renderer.setModel(objektBuffer.get(i).getModel());
-            renderer.nakresli(objektBuffer.get(i).getCasti(), objektBuffer.get(i).getIndexy(), objektBuffer.get(i).getVrcholy());
+        for (int i = 0; i < telesoBuffer.toArray().length; i++) {
+            renderer.setModel(telesoBuffer.get(i).getModel());
+            renderer.nakresli(telesoBuffer.get(i).getCasti(), telesoBuffer.get(i).getIndexy(), telesoBuffer.get(i).getVrcholy());
         }
 
         // necessary to manually request update of the UI

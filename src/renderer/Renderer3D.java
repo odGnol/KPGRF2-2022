@@ -32,6 +32,7 @@ public class Renderer3D implements GPURenderer {
             TypGeometrickeTopologie topologyType = cast.getGeometrickyTyp();
             int index = cast.getIndex();
             int pocet = cast.getPocet();
+
             if (topologyType == TypGeometrickeTopologie.TROJUHELNIK) {
                 for (int i = index; i < pocet * 3 + index; i += 3) {
                     Integer i1 = ib.get(i);
@@ -45,7 +46,7 @@ public class Renderer3D implements GPURenderer {
                 }
             } else if (topologyType == TypGeometrickeTopologie.USECKA) {
                 // Doplnění: úsečka
-                for (int i = index; i <= pocet * 2; i += 2) {
+                for (int i = index; i < pocet * 2; i += 2) {
                     Integer i1 = ib.get(i);
                     Integer i2 = ib.get(i + 1);
 
@@ -54,12 +55,13 @@ public class Renderer3D implements GPURenderer {
                     pripravUsecku(v1, v2);
                 }
             } else if (topologyType == TypGeometrickeTopologie.BOD) {
-                for (int i = index; i <= pocet; i++) {
+                for (int i = index; i < pocet; i++) {
                     Integer i1 = ib.get(i);
 
                     Vrchol v1 = vb.get(i1);
 
-                    pripravBod(v1);
+//                    pripravBod(v1);
+                    nakresliPixel((int) v1.getX(), (int) v1.getY(), v1.getZ(), v1.getBarva());
                 }
             } // ...
         }
@@ -100,22 +102,21 @@ public class Renderer3D implements GPURenderer {
         // slide 101
         // od javy 11 je možné využít var proměnnou, jen pro lokální proměnnou: var docasne = a;
         if (a.getZ() < b.getZ()) {
-            Vrchol docasne = a;
+            var docasne = a;
             a = b;
             b = docasne;
         }
         if (b.getZ() < c.getZ()) {
-            Vrchol docasne = b;
+            var docasne = b;
             b = c;
             c = docasne;
         }
         // teď je v C vrchol, který je nám nejblíže
         if (a.getZ() < b.getZ()) {
-            Vrchol docasne = a;
+            var docasne = a;
             a = b;
             b = docasne;
         }
-//        List<Vertex> collect = Stream.of(a, b, c).sorted(Comparator.comparingDouble(Vertex::getZ)).toList(); // ? not tested
 
         // teď máme seřazeno - Z je od největšího po nejmenší: A, B, C
 
@@ -132,7 +133,7 @@ public class Renderer3D implements GPURenderer {
             Vrchol ab = a.mul(1 - t1).add(b.mul(t1));
 
             double t2 = -a.getZ() / (c.getZ() - a.getZ());
-            Vrchol ac = a.mul(1 - t2).add(b.mul(t2));
+            Vrchol ac = a.mul(1 - t2).add(c.mul(t2));
 
             nakresliTrojuhelnik(a, ab, ac);
 
@@ -174,17 +175,17 @@ public class Renderer3D implements GPURenderer {
 
         // 3. seřazení podle Y
         if (v1.getY() > v2.getY()) {
-            Vrchol docasne = v1;
+            var docasne = v1;
             v1 = v2;
             v2 = docasne;
         }
         if (v2.getY() > v3.getY()) {
-            Vrchol docasne = v2;
+            var docasne = v2;
             v2 = v3;
             v3 = docasne;
         }
         if (v1.getY() > v2.getY()) {
-            Vrchol docasne = v1;
+            var docasne = v1;
             v1 = v2;
             v2 = docasne;
         }
@@ -192,10 +193,10 @@ public class Renderer3D implements GPURenderer {
         // 4. interpolace podle Y
         // slides 129, 130
         // 1. for cyklus A->B
-        int yStart = Math.max(0, (int) v1.getY() + 1);
-        double yEnd = Math.min(imageBuffer.getHeight() - 1, v2.getY());
+        int startAB = Math.max(0, (int) v1.getY() + 1);
+        double endAB = Math.min(imageBuffer.getHeight() - 1, v2.getY());
 
-        for (int y = yStart; y <= yEnd; y++) {
+        for (int y = startAB; y <= endAB; y++) {
             double t1 = (y - v1.getY()) / (v2.getY() - v1.getY());
             Vrchol d = v1.mul(1 - t1).add(v2.mul(t1));
 
@@ -205,16 +206,16 @@ public class Renderer3D implements GPURenderer {
             naplnUsecku(d, e);
         }
         // 2. for cyklus B->C
-        // TODO Doplnění: cyklus interpolace po ose X
+        // Doplnění: cyklus interpolace po ose X
 
-        int xStart = Math.max(0, (int) v1.getX() + 1);
-        double xEnd = Math.min(imageBuffer.getWidth() - 1, v2.getX());
+        int startBC = Math.max(0, (int) v2.getY() + 1);
+        double endBC = Math.min(imageBuffer.getWidth() - 1, v3.getY());
 
-        for (int x = xStart; x <= xEnd; x++) {
-            double t3 = (x - v1.getX()) / (v2.getX() - v1.getX());
-            Vrchol f = v1.mul(1 - t3).add(v2.mul(t3));
+        for (int y = startBC; y <= endBC; y++) {
+            double t3 = (y - v2.getY()) / (v3.getY() - v2.getY());
+            Vrchol f = v2.mul(1 - t3).add(v3.mul(t3));
 
-            double t4 = (x - v1.getX()) / (v3.getX() - v1.getX());
+            double t4 = (y - v1.getY()) / (v3.getY() - v1.getY());
             Vrchol g = v1.mul(1 - t4).add(v3.mul(t4));
 
             naplnUsecku(f, g);
@@ -324,9 +325,9 @@ public class Renderer3D implements GPURenderer {
 
     private void naplnUsecku(Vrchol a, Vrchol b) {
         if (a.getX() > b.getX()) {
-            Vrchol temp = a;
+            var docasne = a;
             a = b;
-            b = temp;
+            b = docasne;
         }
 
         int xStart = Math.max(0, (int) a.getX() + 1);
@@ -361,17 +362,17 @@ public class Renderer3D implements GPURenderer {
         }
     }
 
-    private void nakresliPixel(int x, int y, double z, Col color) {
+    private void nakresliPixel(int x, int y, double z, Col barva) {
         Optional<Double> zOptional = depthBuffer.getElement(x, y);
         if (zOptional.isPresent() && zOptional.get() > z) {
             depthBuffer.setElement(x, y, z);
-            imageBuffer.setElement(x, y, color.getRGB());
+            imageBuffer.setElement(x, y, barva.getRGB());
         }
     }
 
-    private Vec3D transformujDoOkna(Vrchol vertex) {
+    private Vec3D transformujDoOkna(Vrchol vrchol) {
         // přednáška PGI_F, slide 90
-        return new Vec3D(vertex.getBod())
+        return new Vec3D(vrchol.getBod())
                 .mul(new Vec3D(1, -1, 1)) // Y jde nahoru a my chceme, aby šlo dolů
                 .add(new Vec3D(1, 1, 0)) // (0, 0) je uprostřed a my chceme, aby bylo vlevo nahoře
                 .mul(new Vec3D(imageBuffer.getWidth() / 2.0, imageBuffer.getHeight() / 2.0, 1));

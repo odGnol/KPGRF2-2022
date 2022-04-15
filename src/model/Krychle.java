@@ -5,7 +5,7 @@ import transforms.Point3D;
 
 import java.awt.*;
 
-public class Krychle extends Objekt {
+public class Krychle extends Teleso {
     public Krychle() {
         vrcholBuffer.add(new Vrchol(new Point3D(-1, -1, 1), new Col(1.0, 1.0, 0.0)));
         vrcholBuffer.add(new Vrchol(new Point3D(1, -1, 1), new Col(255, 255, 0)));
