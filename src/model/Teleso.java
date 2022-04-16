@@ -1,10 +1,13 @@
 package model;
 
+import transforms.Col;
 import transforms.Mat4;
 import transforms.Mat4Identity;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public abstract class Teleso {
 
@@ -49,4 +52,14 @@ public abstract class Teleso {
         this.barva = barva;
     }
 
+    public Col nastavitNahodnouBarvu() {
+        ;
+        final Random nahodne = new Random();
+
+        double R = nahodne.nextDouble();
+        double G = nahodne.nextDouble() / 2f + 0.5;
+        double B = nahodne.nextDouble() / 2f + 0.5;
+
+        return new Col(R, G, B);
+    }
 }
