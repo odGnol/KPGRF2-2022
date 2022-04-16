@@ -1,9 +1,6 @@
 package control;
 
-import model.Cast;
-import model.Krychle;
-import model.Teleso;
-import model.Vrchol;
+import model.*;
 import rasterize.Raster;
 import renderer.GPURenderer;
 import renderer.Renderer3D;
@@ -28,6 +25,7 @@ public class Controller3D {
     private final List<Teleso> telesoBuffer;
 
     private Krychle krychle;
+    private Jehlan jehlan;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -45,6 +43,7 @@ public class Controller3D {
 
     private void initBuffers() {
         telesoBuffer.add(new Krychle());
+        telesoBuffer.add(new Jehlan());
     }
 
     private void initMatrices() {
