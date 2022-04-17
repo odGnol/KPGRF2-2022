@@ -41,6 +41,7 @@ public class Controller3D {
     private void initBuffers() {
         telesaBuffer.add(new Krychle());
         telesaBuffer.add(new Jehlan());
+        telesaBuffer.add(new KomolyJehlan());
     }
 
     private void initMatrices() {
@@ -82,7 +83,6 @@ public class Controller3D {
 
         KeyAdapter kPohybKamery = new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
-                System.out.println("klavesa");
                 // pohyb klásesami WSAD + šipky nahoru a dolů
                 if (e.getKeyCode() == KeyEvent.VK_W) {
                     kamera = kamera.forward(rychlostSmerPohybu);
@@ -102,6 +102,7 @@ public class Controller3D {
         };
 
         MouseAdapter mPohybKamery = new MouseAdapter() {
+            // pohyb myší
             boolean pohybKamery = false;
             int aktualniX, aktualniY = -1;
 
@@ -132,9 +133,10 @@ public class Controller3D {
                 aktualniY = e.getY();
             }
 
+            // FIXME nefunkční scale
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                if (e.getWheelRotation() == -1) {
+                if (e.getWheelRotation() < 0) {
                     Mat4 mat = new Mat4Scale(1.1, 1.1, 1.1);
                     model = model.mul(mat);
                 } else {
@@ -148,5 +150,6 @@ public class Controller3D {
         panel.addKeyListener(kPohybKamery);
         panel.addMouseListener(mPohybKamery);
         panel.addMouseMotionListener(mPohybKamery);
+        panel.addMouseWheelListener(mPohybKamery);
     }
 }

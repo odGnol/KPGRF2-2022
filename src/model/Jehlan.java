@@ -2,15 +2,13 @@ package model;
 
 import transforms.Point3D;
 
-import java.util.ArrayList;
-
 public class Jehlan extends Teleso {
     public Jehlan() {
 
-        vrcholBuffer.add(new Vrchol(new Point3D(1,1,1), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(-1,-1,1), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(-1,1,-1), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(1,-1,-1), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(1.5,1.5,2), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-1.5,-1.5,2), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-1.5,1.5,-2), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(1.5,-1.5,-2), nastavitNahodnouBarvu()));
 
         indexBuffer.add(0);
         indexBuffer.add(1);
