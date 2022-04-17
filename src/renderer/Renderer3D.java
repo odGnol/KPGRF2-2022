@@ -15,15 +15,15 @@ public class Renderer3D implements GPURenderer {
     private final Raster<Integer> imageBuffer;
     private final DepthBuffer depthBuffer;
 
-    private Mat4 model, view, projection;
+    private Mat4 model, pohled, projekce;
 
     public Renderer3D(Raster<Integer> raster) {
         this.imageBuffer = raster;
         depthBuffer = new DepthBuffer(raster.getWidth(), raster.getHeight());
 
         model = new Mat4Identity();
-        view = new Mat4Identity();
-        projection = new Mat4Identity();
+        pohled = new Mat4Identity();
+        projekce = new Mat4Identity();
     }
 
     @Override
@@ -70,15 +70,15 @@ public class Renderer3D implements GPURenderer {
     private void pripravTrojuhelnik(Vrchol v1, Vrchol v2, Vrchol v3) {
         // 1. transformace vrcholů
         Vrchol a = new Vrchol(
-                v1.getBod().mul(model).mul(view).mul(projection),
+                v1.getBod().mul(model).mul(pohled).mul(projekce),
                 v1.getBarva()
         );
         Vrchol b = new Vrchol(
-                v2.getBod().mul(model).mul(view).mul(projection),
+                v2.getBod().mul(model).mul(pohled).mul(projekce),
                 v2.getBarva()
         );
         Vrchol c = new Vrchol(
-                v3.getBod().mul(model).mul(view).mul(projection),
+                v3.getBod().mul(model).mul(pohled).mul(projekce),
                 v3.getBarva()
         );
 
@@ -225,11 +225,11 @@ public class Renderer3D implements GPURenderer {
     private void pripravUsecku(Vrchol v1, Vrchol v2) {
         // 1. transformace vrcholů
         Vrchol a = new Vrchol(
-                v1.getBod().mul(model).mul(view).mul(projection),
+                v1.getBod().mul(model).mul(pohled).mul(projekce),
                 v1.getBarva()
         );
         Vrchol b = new Vrchol(
-                v2.getBod().mul(model).mul(view).mul(projection),
+                v2.getBod().mul(model).mul(pohled).mul(projekce),
                 v2.getBarva()
         );
 
@@ -343,7 +343,7 @@ public class Renderer3D implements GPURenderer {
 
     private void pripravBod(Vrchol v1) {
         Vrchol a = new Vrchol(
-                v1.getBod().mul(model).mul(view).mul(projection),
+                v1.getBod().mul(model).mul(pohled).mul(projekce),
                 v1.getBarva()
         );
 
@@ -395,13 +395,12 @@ public class Renderer3D implements GPURenderer {
     }
 
     @Override
-    public void setView(Mat4 view) {
-        this.view = view;
+    public void setPohled(Mat4 pohled) {
+        this.pohled = pohled;
     }
 
     @Override
-    public void setProjection(Mat4 projection) {
-        this.projection = projection;
+    public void setProjekce(Mat4 projekce) {
+        this.projekce = projekce;
     }
-
 }

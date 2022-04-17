@@ -14,8 +14,7 @@ public interface GPURenderer {
 
     void setModel(Mat4 model); // modelovací (kombinace scale, rotace, posunutí)
 
-    void setView(Mat4 view); // pohledová
+    void setPohled(Mat4 pohled); // pohledová
 
-    void setProjection(Mat4 projection); // projekční
-
+    void setProjekce(Mat4 projekce); // projekční
 }

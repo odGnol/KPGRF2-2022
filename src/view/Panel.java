@@ -28,4 +28,7 @@ public class Panel extends JPanel {
         return imageBuffer;
     }
 
+    public void procisti() {
+        imageBuffer.clear();
+    }
 }

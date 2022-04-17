@@ -67,8 +67,8 @@ public class Controller3D {
         renderer.procisti();
 
         renderer.setModel(model);
-        renderer.setView(kamera.getViewMatrix());
-        renderer.setProjection(projection);
+        renderer.setPohled(kamera.getViewMatrix());
+        renderer.setProjekce(projection);
 
         for (int i = 0; i < telesaBuffer.toArray().length; i++) {
             renderer.setModel(telesaBuffer.get(i).getModel());
@@ -79,25 +79,52 @@ public class Controller3D {
         panel.repaint();
     }
 
+    private void nastavNovouProjekci() {
+        renderer.procisti();
+        renderer.setPohled(kamera.getViewMatrix());
+
+        if (projection instanceof Mat4PerspRH) {
+            // ortogonální projekce
+            projection = new Mat4OrthoRH(5, 5, 0.5, 30);
+        } else {
+            // perspektivní projekce
+            projection = new Mat4PerspRH(Math.PI / 3, imageBuffer.getHeight() / (float) imageBuffer.getWidth(), 0.5, 30);
+        }
+
+        renderer.setProjekce(projection);
+        renderer.setModel(model);
+        zobraz();
+    }
+
     private void initListeners(Panel panel) {
 
         KeyAdapter kPohybKamery = new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
+            public void keyPressed(KeyEvent udalost) {
+                var klavesa = udalost.getKeyCode();
                 // pohyb klásesami WSAD + šipky nahoru a dolů
-                if (e.getKeyCode() == KeyEvent.VK_W) {
+                if (klavesa == KeyEvent.VK_W) {
                     kamera = kamera.forward(rychlostSmerPohybu);
-                } else if (e.getKeyCode() == KeyEvent.VK_S) {
+                } else if (klavesa == KeyEvent.VK_S) {
                     kamera = kamera.backward(rychlostSmerPohybu);
-                } else if (e.getKeyCode() == KeyEvent.VK_A) {
+                } else if (klavesa == KeyEvent.VK_A) {
                     kamera = kamera.left(rychlostSmerPohybu);
-                } else if (e.getKeyCode() == KeyEvent.VK_D) {
+                } else if (klavesa == KeyEvent.VK_D) {
                     kamera = kamera.right(rychlostSmerPohybu);
-                } else if (e.getKeyCode() == KeyEvent.VK_UP) {
+                } else if (klavesa == KeyEvent.VK_UP) {
                     kamera = kamera.up(rychlostSmerPohybu);
-                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                } else if (klavesa == KeyEvent.VK_DOWN) {
                     kamera = kamera.down(rychlostSmerPohybu);
                 }
                 zobraz();
+            }
+        };
+
+        KeyAdapter projekce = new KeyAdapter() {
+            public void keyPressed(KeyEvent udalost) {
+                var klavesa = udalost.getKeyCode();
+                if (klavesa == KeyEvent.VK_P) {
+                    nastavNovouProjekci();
+                }
             }
         };
 
@@ -107,36 +134,36 @@ public class Controller3D {
             int aktualniX, aktualniY = -1;
 
             @Override
-            public void mousePressed(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1) {
+            public void mousePressed(MouseEvent udalost) {
+                var mys = udalost.getButton();
+                if (mys == MouseEvent.BUTTON1) {
                     pohybKamery = true;
                 }
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {
+            public void mouseReleased(MouseEvent udalost) {
                 pohybKamery = false;
                 aktualniX = aktualniY = -1;
-
             }
 
             @Override
-            public void mouseDragged(MouseEvent e) {
+            public void mouseDragged(MouseEvent udalost) {
                 if (pohybKamery) {
                     if (aktualniX != -1 && aktualniY != -1) {
-                        kamera = kamera.addAzimuth((aktualniX - e.getX()) / 1000.0);
-                        kamera = kamera.addZenith((aktualniY - e.getY()) / 300.0);
+                        kamera = kamera.addAzimuth((aktualniX - udalost.getX()) / 1000.0);
+                        kamera = kamera.addZenith((aktualniY - udalost.getY()) / 300.0);
                     }
                     zobraz();
                 }
-                aktualniX = e.getX();
-                aktualniY = e.getY();
+                aktualniX = udalost.getX();
+                aktualniY = udalost.getY();
             }
 
             // FIXME nefunkční scale
             @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                if (e.getWheelRotation() < 0) {
+            public void mouseWheelMoved(MouseWheelEvent udalost) {
+                if (udalost.getWheelRotation() < 0) {
                     Mat4 mat = new Mat4Scale(1.1, 1.1, 1.1);
                     model = model.mul(mat);
                 } else {
@@ -148,6 +175,7 @@ public class Controller3D {
         };
 
         panel.addKeyListener(kPohybKamery);
+        panel.addKeyListener(projekce);
         panel.addMouseListener(mPohybKamery);
         panel.addMouseMotionListener(mPohybKamery);
         panel.addMouseWheelListener(mPohybKamery);
