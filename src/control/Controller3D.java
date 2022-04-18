@@ -160,15 +160,14 @@ public class Controller3D {
                 aktualniY = udalost.getY();
             }
 
-            // FIXME nefunkční scale
             @Override
             public void mouseWheelMoved(MouseWheelEvent udalost) {
                 if (udalost.getWheelRotation() < 0) {
                     Mat4 mat = new Mat4Scale(1.1, 1.1, 1.1);
-                    model = model.mul(mat);
+                    telesaBuffer.get(2).setModel(telesaBuffer.get(2).getModel().mul(mat));
                 } else {
                     Mat4 mat = new Mat4Scale(0.9, 0.9, 0.9);
-                    model = model.mul(mat);
+                    telesaBuffer.get(2).setModel(telesaBuffer.get(2).getModel().mul(mat));
                 }
                 zobraz();
             }
