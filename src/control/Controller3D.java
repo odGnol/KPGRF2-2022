@@ -17,12 +17,15 @@ public class Controller3D {
     private final GPURenderer renderer;
     private final Raster<Integer> imageBuffer;
 
-    private Mat4 model, projection;
+    private Mat4 model, projection, maticeTransformace;
     private Camera kamera;
 
     private final List<Teleso> telesaBuffer;
 
     private final double rychlostSmerPohybu = 0.1;
+    private boolean rotace = false;
+    private boolean translace = false;
+    private int poziceTelesa = 0;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -159,15 +162,71 @@ public class Controller3D {
                 aktualniX = udalost.getX();
                 aktualniY = udalost.getY();
             }
+        };
 
+        KeyAdapter kVyberTransformaci = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent udalost) {
+                var klavesa = udalost.getKeyCode();
+                switch (klavesa) {
+                    case (KeyEvent.VK_1) -> {
+                        System.out.println("Rotace.");
+                        rotace = true;
+                        translace = false;
+                    }
+                    case (KeyEvent.VK_2) -> {
+                        System.out.println("Translace.");
+                        translace = true;
+                        rotace = false;
+                    }
+                }
+            }
+        };
+
+        KeyAdapter kZmenaTelesa = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent udalost) {
+                var klavesa = udalost.getKeyCode();
+
+                if (klavesa == KeyEvent.VK_G) {
+                    if (poziceTelesa == telesaBuffer.size() - 1) {
+                        poziceTelesa = 0;
+                    } else {
+                        poziceTelesa++;
+                    }
+                } else if (klavesa == KeyEvent.VK_F) {
+                    if (poziceTelesa == 0) {
+                        poziceTelesa = telesaBuffer.size() - 1;
+                    } else {
+                        poziceTelesa--;
+                    }
+                }
+            }
+        };
+
+        MouseAdapter mTransformaceTelesa = new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent udalost) {
                 if (udalost.getWheelRotation() < 0) {
-                    Mat4 mat = new Mat4Scale(1.1, 1.1, 1.1);
-                    telesaBuffer.get(2).setModel(telesaBuffer.get(2).getModel().mul(mat));
+                    if (translace) {
+                        maticeTransformace = new Mat4Transl(1.1, 0, 0);
+                    } else if (rotace) {
+                        maticeTransformace = new Mat4RotXYZ(0, 0, 1.1);
+                    } else {
+                        System.out.println("Měřítko.");
+                        maticeTransformace = new Mat4Scale(1.1, 1.1, 1.1);
+                    }
+                    telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
                 } else {
-                    Mat4 mat = new Mat4Scale(0.9, 0.9, 0.9);
-                    telesaBuffer.get(2).setModel(telesaBuffer.get(2).getModel().mul(mat));
+                    if (translace) {
+                        maticeTransformace = new Mat4Transl(-1.1, 0, 0);
+                    } else if (rotace) {
+                        maticeTransformace = new Mat4RotXYZ(0, 0, -1.1);
+                    } else {
+                        System.out.println("Měřítko.");
+                        maticeTransformace = new Mat4Scale(0.9, 0.9, 0.9);
+                    }
+                    telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
                 }
                 zobraz();
             }
@@ -175,8 +234,10 @@ public class Controller3D {
 
         panel.addKeyListener(kPohybKamery);
         panel.addKeyListener(projekce);
+        panel.addKeyListener(kZmenaTelesa);
+        panel.addKeyListener(kVyberTransformaci);
         panel.addMouseListener(mPohybKamery);
         panel.addMouseMotionListener(mPohybKamery);
-        panel.addMouseWheelListener(mPohybKamery);
+        panel.addMouseWheelListener(mTransformaceTelesa);
     }
 }
