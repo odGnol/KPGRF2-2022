@@ -17,4 +17,6 @@ public interface GPURenderer {
     void setPohled(Mat4 pohled); // pohledová
 
     void setProjekce(Mat4 projekce); // projekční
+
+    void setDratovyModel(boolean jeDratovy);
 }

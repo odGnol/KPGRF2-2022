@@ -25,6 +25,8 @@ public class Controller3D {
     private final double rychlostSmerPohybu = 0.1;
     private boolean rotace = false;
     private boolean translace = false;
+    private boolean meritko = false;
+    private boolean jeDratovy = false;
     private int poziceTelesa = 0;
 
     public Controller3D(Panel panel) {
@@ -95,6 +97,14 @@ public class Controller3D {
         }
 
         renderer.setProjekce(projection);
+        renderer.setModel(model);
+        zobraz();
+    }
+
+    private void nastavDratoveZobrazeni(boolean jeDratovy) {
+        renderer.procisti();
+        renderer.setPohled(kamera.getViewMatrix());
+        renderer.setDratovyModel(jeDratovy);
         renderer.setModel(model);
         zobraz();
     }
@@ -172,12 +182,17 @@ public class Controller3D {
                     case (KeyEvent.VK_1) -> {
                         System.out.println("Rotace.");
                         rotace = true;
-                        translace = false;
+                        translace = meritko = false;
                     }
                     case (KeyEvent.VK_2) -> {
                         System.out.println("Translace.");
                         translace = true;
-                        rotace = false;
+                        rotace = meritko = false;
+                    }
+                    case (KeyEvent.VK_3) -> {
+                        System.out.println("Meritko.");
+                        meritko = true;
+                        rotace = translace = false;
                     }
                 }
             }
@@ -204,6 +219,23 @@ public class Controller3D {
             }
         };
 
+        KeyAdapter kNastavDratoveZobrazeni = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent udalost) {
+                var klavesa = udalost.getKeyCode();
+
+                if (klavesa == KeyEvent.VK_R) {
+                    if (jeDratovy) {
+                        nastavDratoveZobrazeni(false);
+                        jeDratovy = false;
+                    } else {
+                        nastavDratoveZobrazeni(true);
+                        jeDratovy = true;
+                    }
+                }
+            }
+        };
+
         MouseAdapter mTransformaceTelesa = new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent udalost) {
@@ -212,8 +244,9 @@ public class Controller3D {
                         maticeTransformace = new Mat4Transl(1.1, 0, 0);
                     } else if (rotace) {
                         maticeTransformace = new Mat4RotXYZ(0, 0, 1.1);
+                    } else if (meritko) {
+                        maticeTransformace = new Mat4Scale(1.1, 1.1, 1.1);
                     } else {
-                        System.out.println("Měřítko.");
                         maticeTransformace = new Mat4Scale(1.1, 1.1, 1.1);
                     }
                     telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
@@ -222,8 +255,9 @@ public class Controller3D {
                         maticeTransformace = new Mat4Transl(-1.1, 0, 0);
                     } else if (rotace) {
                         maticeTransformace = new Mat4RotXYZ(0, 0, -1.1);
+                    } else if (meritko) {
+                        maticeTransformace = new Mat4Scale(0.9, 0.9, 0.9);
                     } else {
-                        System.out.println("Měřítko.");
                         maticeTransformace = new Mat4Scale(0.9, 0.9, 0.9);
                     }
                     telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
@@ -236,6 +270,7 @@ public class Controller3D {
         panel.addKeyListener(projekce);
         panel.addKeyListener(kZmenaTelesa);
         panel.addKeyListener(kVyberTransformaci);
+        panel.addKeyListener(kNastavDratoveZobrazeni);
         panel.addMouseListener(mPohybKamery);
         panel.addMouseMotionListener(mPohybKamery);
         panel.addMouseWheelListener(mTransformaceTelesa);

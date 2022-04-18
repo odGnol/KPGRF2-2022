@@ -14,6 +14,7 @@ public class Renderer3D implements GPURenderer {
 
     private final Raster<Integer> imageBuffer;
     private final DepthBuffer depthBuffer;
+    private boolean jeDratovy = false;
 
     private Mat4 model, pohled, projekce;
 
@@ -173,52 +174,58 @@ public class Renderer3D implements GPURenderer {
         Vec3D vec3D3 = transformujDoOkna(dC.get());
         Vrchol v3 = vytvorVrcholZVektoruABarvy(vec3D3, dC.get().getBarva());
 
-        // 3. seřazení podle Y
-        if (v1.getY() > v2.getY()) {
-            var docasne = v1;
-            v1 = v2;
-            v2 = docasne;
-        }
-        if (v2.getY() > v3.getY()) {
-            var docasne = v2;
-            v2 = v3;
-            v3 = docasne;
-        }
-        if (v1.getY() > v2.getY()) {
-            var docasne = v1;
-            v1 = v2;
-            v2 = docasne;
-        }
+        if (jeDratovy) {
+            nakresliUsecku(a, b);
+            nakresliUsecku(a, c);
+            nakresliUsecku(b, c);
+        } else {
+            // 3. seřazení podle Y
+            if (v1.getY() > v2.getY()) {
+                var docasne = v1;
+                v1 = v2;
+                v2 = docasne;
+            }
+            if (v2.getY() > v3.getY()) {
+                var docasne = v2;
+                v2 = v3;
+                v3 = docasne;
+            }
+            if (v1.getY() > v2.getY()) {
+                var docasne = v1;
+                v1 = v2;
+                v2 = docasne;
+            }
 
-        // 4. interpolace podle Y
-        // slides 129, 130
-        // 1. for cyklus A->B
-        int startAB = Math.max(0, (int) v1.getY() + 1);
-        double endAB = Math.min(imageBuffer.getHeight() - 1, v2.getY());
+            // 4. interpolace podle Y
+            // slides 129, 130
+            // 1. for cyklus A->B
+            int startAB = Math.max(0, (int) v1.getY() + 1);
+            double endAB = Math.min(imageBuffer.getHeight() - 1, v2.getY());
 
-        for (int y = startAB; y <= endAB; y++) {
-            double t1 = (y - v1.getY()) / (v2.getY() - v1.getY());
-            Vrchol d = v1.mul(1 - t1).add(v2.mul(t1));
+            for (int y = startAB; y <= endAB; y++) {
+                double t1 = (y - v1.getY()) / (v2.getY() - v1.getY());
+                Vrchol d = v1.mul(1 - t1).add(v2.mul(t1));
 
-            double t2 = (y - v1.getY()) / (v3.getY() - v1.getY());
-            Vrchol e = v1.mul(1 - t2).add(v3.mul(t2));
+                double t2 = (y - v1.getY()) / (v3.getY() - v1.getY());
+                Vrchol e = v1.mul(1 - t2).add(v3.mul(t2));
 
-            naplnUsecku(d, e);
-        }
-        // 2. for cyklus B->C
-        // Doplnění: cyklus interpolace po ose X
+                naplnUsecku(d, e);
+            }
+            // 2. for cyklus B->C
+            // Doplnění: cyklus interpolace po ose X
 
-        int startBC = Math.max(0, (int) v2.getY() + 1);
-        double endBC = Math.min(imageBuffer.getWidth() - 1, v3.getY());
+            int startBC = Math.max(0, (int) v2.getY() + 1);
+            double endBC = Math.min(imageBuffer.getWidth() - 1, v3.getY());
 
-        for (int y = startBC; y <= endBC; y++) {
-            double t3 = (y - v2.getY()) / (v3.getY() - v2.getY());
-            Vrchol f = v2.mul(1 - t3).add(v3.mul(t3));
+            for (int y = startBC; y <= endBC; y++) {
+                double t3 = (y - v2.getY()) / (v3.getY() - v2.getY());
+                Vrchol f = v2.mul(1 - t3).add(v3.mul(t3));
 
-            double t4 = (y - v1.getY()) / (v3.getY() - v1.getY());
-            Vrchol g = v1.mul(1 - t4).add(v3.mul(t4));
+                double t4 = (y - v1.getY()) / (v3.getY() - v1.getY());
+                Vrchol g = v1.mul(1 - t4).add(v3.mul(t4));
 
-            naplnUsecku(f, g);
+                naplnUsecku(f, g);
+            }
         }
     }
 
@@ -402,5 +409,10 @@ public class Renderer3D implements GPURenderer {
     @Override
     public void setProjekce(Mat4 projekce) {
         this.projekce = projekce;
+    }
+
+    @Override
+    public void setDratovyModel(boolean jeDratovy) {
+        this.jeDratovy = jeDratovy;
     }
 }
