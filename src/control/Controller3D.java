@@ -21,6 +21,7 @@ public class Controller3D {
     private Camera kamera;
 
     private final List<Teleso> telesaBuffer;
+    private final List<Teleso> xyzOsyBuffer;
 
     private final double rychlostSmerPohybu = 0.1;
     private boolean rotace = false;
@@ -35,6 +36,7 @@ public class Controller3D {
         this.renderer = new Renderer3D(panel.getImageBuffer());
 
         telesaBuffer = new ArrayList<>();
+        xyzOsyBuffer = new ArrayList<>();
 
         initBuffers();
         initMatrices();
@@ -47,6 +49,7 @@ public class Controller3D {
         telesaBuffer.add(new Krychle());
         telesaBuffer.add(new Jehlan());
         telesaBuffer.add(new KomolyJehlan());
+        xyzOsyBuffer.add(new GizmoXYZ());
     }
 
     private void initMatrices() {
@@ -79,6 +82,9 @@ public class Controller3D {
             renderer.setModel(telesaBuffer.get(i).getModel());
             renderer.nakresli(telesaBuffer.get(i).getCasti(), telesaBuffer.get(i).getIndexy(), telesaBuffer.get(i).getVrcholy());
         }
+
+        renderer.setModel(xyzOsyBuffer.get(0).getModel());
+        renderer.nakresli(xyzOsyBuffer.get(0).getCasti(), xyzOsyBuffer.get(0).getIndexy(), xyzOsyBuffer.get(0).getVrcholy());
 
         // necessary to manually request update of the UI
         panel.repaint();

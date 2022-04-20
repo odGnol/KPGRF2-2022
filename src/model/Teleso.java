@@ -53,7 +53,6 @@ public abstract class Teleso {
     }
 
     public Col nastavitNahodnouBarvu() {
-        ;
         final Random nahodne = new Random();
 
         double R = nahodne.nextDouble();
