@@ -1,5 +1,23 @@
 ## Studentská práce pro letní semestr ak. r. 2021/2022
 
+# Ovládání
+
+>`Pohyb kamery na scéně` - rozhlíží se myší s držením levého tlačítka
+>
+>`Přepnutí projekce` - klávesa P
+> 
+>`Přepnutí drátového modelu` - klávesa R
+> 
+>`Výběr tělesa` - klávesy F a G
+> 
+>`Transformace tělesa` - kolečko myši
+> 
+>`Výběr transformace tělesa`
+>- klávesa 1: rotace
+>- klávesa 2: translace
+>- klávesa 3: změna měřítka
+
+
 ## KPGR1
 > `main` branch
 
