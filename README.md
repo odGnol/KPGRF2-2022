@@ -19,7 +19,7 @@
 > 
 > `Transformace křivek nebo jiných těles (jehlan atd.)`
 >- křivky: klávesa O (O jako Odra);
->- jiná tělesa: klávesa I;
+>- jiná tělesa: klávesa I (I jako Isis);
 > 
 > `Výběr mezi křivkami`
 >- Bézierova kubika: klávesa B 
