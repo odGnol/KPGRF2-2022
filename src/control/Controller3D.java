@@ -19,8 +19,10 @@ public class Controller3D {
 
     private Mat4 model, projection, maticeTransformace;
     private Camera kamera;
+    private Mat4 typMaticeKrivky = Cubic.BEZIER;
 
     private final List<Teleso> telesaBuffer;
+    private final List<Teleso> krivkyBuffer;
     private final List<Teleso> xyzOsyBuffer;
 
     private final double rychlostSmerPohybu = 0.1;
@@ -29,6 +31,7 @@ public class Controller3D {
     private boolean meritko = false;
     private boolean jeDratovy = false;
     private int poziceTelesa = 0;
+    private boolean transformaceKrivek = false;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -36,6 +39,7 @@ public class Controller3D {
         this.renderer = new Renderer3D(panel.getImageBuffer());
 
         telesaBuffer = new ArrayList<>();
+        krivkyBuffer = new ArrayList<>();
         xyzOsyBuffer = new ArrayList<>();
 
         initBuffers();
@@ -49,6 +53,7 @@ public class Controller3D {
         telesaBuffer.add(new Krychle());
         telesaBuffer.add(new Jehlan());
         telesaBuffer.add(new KomolyJehlan());
+        krivkyBuffer.add(new BikubickaKrivka(Cubic.BEZIER));
         xyzOsyBuffer.add(new GizmoXYZ());
     }
 
@@ -72,6 +77,7 @@ public class Controller3D {
     }
 
     private void zobraz() {
+        panel.procisti();
         renderer.procisti();
 
         renderer.setModel(model);
@@ -82,6 +88,9 @@ public class Controller3D {
             renderer.setModel(telesaBuffer.get(i).getModel());
             renderer.nakresli(telesaBuffer.get(i).getCasti(), telesaBuffer.get(i).getIndexy(), telesaBuffer.get(i).getVrcholy());
         }
+
+        renderer.setModel(krivkyBuffer.get(0).getModel());
+        renderer.nakresli(krivkyBuffer.get(0).getCasti(), krivkyBuffer.get(0).getIndexy(), krivkyBuffer.get(0).getVrcholy());
 
         renderer.setModel(xyzOsyBuffer.get(0).getModel());
         renderer.nakresli(xyzOsyBuffer.get(0).getCasti(), xyzOsyBuffer.get(0).getIndexy(), xyzOsyBuffer.get(0).getVrcholy());
@@ -138,6 +147,19 @@ public class Controller3D {
             }
         };
 
+        KeyAdapter vyberTransformaceTypuTeles = new KeyAdapter() {
+            public void keyPressed(KeyEvent udalost) {
+                var klavesa = udalost.getKeyCode();
+                if (klavesa == KeyEvent.VK_I) {
+                    System.out.print("Tělesa - Komol jehlan, jehlan, krychle.");
+                    transformaceKrivek = false;
+                } else if (klavesa == KeyEvent.VK_O) {
+                    System.out.print("Křivky - kubika");
+                    transformaceKrivek = true;
+                }
+            }
+        };
+
         KeyAdapter projekce = new KeyAdapter() {
             public void keyPressed(KeyEvent udalost) {
                 var klavesa = udalost.getKeyCode();
@@ -184,22 +206,18 @@ public class Controller3D {
             @Override
             public void keyPressed(KeyEvent udalost) {
                 var klavesa = udalost.getKeyCode();
-                switch (klavesa) {
-                    case (KeyEvent.VK_1) -> {
-                        System.out.println("Rotace.");
-                        rotace = true;
-                        translace = meritko = false;
-                    }
-                    case (KeyEvent.VK_2) -> {
-                        System.out.println("Translace.");
-                        translace = true;
-                        rotace = meritko = false;
-                    }
-                    case (KeyEvent.VK_3) -> {
-                        System.out.println("Meritko.");
-                        meritko = true;
-                        rotace = translace = false;
-                    }
+                if (klavesa == KeyEvent.VK_1) {
+                    System.out.println("Rotace.");
+                    rotace = true;
+                    translace = meritko = false;
+                } else if (klavesa == KeyEvent.VK_2) {
+                    System.out.println("Translace.");
+                    translace = true;
+                    rotace = meritko = false;
+                } else if (klavesa == KeyEvent.VK_3) {
+                    System.out.println("Meritko.");
+                    meritko = true;
+                    rotace = translace = false;
                 }
             }
         };
@@ -209,17 +227,21 @@ public class Controller3D {
             public void keyPressed(KeyEvent udalost) {
                 var klavesa = udalost.getKeyCode();
 
-                if (klavesa == KeyEvent.VK_G) {
-                    if (poziceTelesa == telesaBuffer.size() - 1) {
-                        poziceTelesa = 0;
-                    } else {
-                        poziceTelesa++;
-                    }
-                } else if (klavesa == KeyEvent.VK_F) {
-                    if (poziceTelesa == 0) {
-                        poziceTelesa = telesaBuffer.size() - 1;
-                    } else {
-                        poziceTelesa--;
+                if (transformaceKrivek && (klavesa == KeyEvent.VK_G || klavesa == KeyEvent.VK_F)) {
+                    System.out.println("Přepněte na další typ křivky nebo změňte transformaci těles.");
+                } else {
+                    if (klavesa == KeyEvent.VK_G) {
+                        if (poziceTelesa == telesaBuffer.size() - 1) {
+                            poziceTelesa = 0;
+                        } else {
+                            poziceTelesa++;
+                        }
+                    } else if (klavesa == KeyEvent.VK_F) {
+                        if (poziceTelesa == 0) {
+                            poziceTelesa = telesaBuffer.size() - 1;
+                        } else {
+                            poziceTelesa--;
+                        }
                     }
                 }
             }
@@ -242,6 +264,33 @@ public class Controller3D {
             }
         };
 
+        KeyAdapter kVyberTypuKBikupickychrivek = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent udalost) {
+                var klavesa = udalost.getKeyCode();
+                if (klavesa == KeyEvent.VK_B) {
+                    System.out.println("Bézierova kubika");
+
+                    krivkyBuffer.clear();
+                    typMaticeKrivky = Cubic.BEZIER;
+                    krivkyBuffer.add(new BikubickaKrivka(Cubic.BEZIER));
+                } else if (klavesa == KeyEvent.VK_N) {
+                    System.out.println("Coonsova kubika");
+
+                    krivkyBuffer.clear();
+                    typMaticeKrivky = Cubic.COONS;
+                    krivkyBuffer.add(new BikubickaKrivka(Cubic.COONS));
+                } else if (klavesa == KeyEvent.VK_M) {
+                    System.out.println("Fergusonova kubika");
+
+                    krivkyBuffer.clear();
+                    typMaticeKrivky = Cubic.FERGUSON;
+                    krivkyBuffer.add(new BikubickaKrivka(Cubic.FERGUSON));
+                }
+                zobraz();
+            }
+        };
+
         MouseAdapter mTransformaceTelesa = new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent udalost) {
@@ -255,7 +304,12 @@ public class Controller3D {
                     } else {
                         maticeTransformace = new Mat4Scale(1.1, 1.1, 1.1);
                     }
-                    telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
+
+                    if (transformaceKrivek) {
+                        krivkyBuffer.get(0).setModel(krivkyBuffer.get(0).getModel().mul(maticeTransformace));
+                    } else {
+                        telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
+                    }
                 } else {
                     if (translace) {
                         maticeTransformace = new Mat4Transl(-1.1, 0, 0);
@@ -266,7 +320,13 @@ public class Controller3D {
                     } else {
                         maticeTransformace = new Mat4Scale(0.9, 0.9, 0.9);
                     }
-                    telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
+
+                    if (transformaceKrivek) {
+                        krivkyBuffer.get(0).setModel(krivkyBuffer.get(0).getModel().mul(maticeTransformace));
+                    } else {
+                        telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
+                    }
+
                 }
                 zobraz();
             }
@@ -276,7 +336,9 @@ public class Controller3D {
         panel.addKeyListener(projekce);
         panel.addKeyListener(kZmenaTelesa);
         panel.addKeyListener(kVyberTransformaci);
+        panel.addKeyListener(vyberTransformaceTypuTeles);
         panel.addKeyListener(kNastavDratoveZobrazeni);
+        panel.addKeyListener(kVyberTypuKBikupickychrivek);
         panel.addMouseListener(mPohybKamery);
         panel.addMouseMotionListener(mPohybKamery);
         panel.addMouseWheelListener(mTransformaceTelesa);

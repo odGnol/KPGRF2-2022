@@ -16,6 +16,15 @@
 >- klávesa 1: rotace
 >- klávesa 2: translace
 >- klávesa 3: změna měřítka
+> 
+> `Transformace křivek nebo jiných těles (jehlan atd.)`
+>- křivky: klávesa O (O jako Odra);
+>- jiná tělesa: klávesa I;
+> 
+> `Výběr mezi křivkami`
+>- Bézierova kubika: klávesa B 
+>- Bézierova kubika: klávesa N
+>- Fergussonova kubika: klávesa M
 
 
 ## KPGR1
