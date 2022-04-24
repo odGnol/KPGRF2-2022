@@ -23,7 +23,7 @@
 > 
 > `Výběr mezi křivkami`
 >- Bézierova kubika: klávesa B 
->- Bézierova kubika: klávesa N
+>- Coonsova kubika: klávesa N
 >- Fergussonova kubika: klávesa M
 
 
