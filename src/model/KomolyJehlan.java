@@ -4,15 +4,15 @@ import transforms.Point3D;
 
 public class KomolyJehlan extends Teleso {
     public KomolyJehlan() {
-        vrcholBuffer.add(new Vrchol(new Point3D(-2, -2, 2), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(2, -2, 2), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(2, 2, 2), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(-2, 2, 2), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-2, -2, 0), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(2, -2, 0), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(2, 2, 0), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-2, 2, 0), nastavitNahodnouBarvu()));
 
-        vrcholBuffer.add(new Vrchol(new Point3D(-4, -4, -2), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(4, -4, -2), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(4, 4, -2), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(-4, 4, -2), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-4, -4, -4), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(4, -4, -4), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(4, 4, -4), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-4, 4, -4), nastavitNahodnouBarvu()));
 
         indexBuffer.add(0);
         indexBuffer.add(1);

@@ -53,20 +53,20 @@ public class Controller3D {
         telesaBuffer.add(new Krychle());
         telesaBuffer.add(new Jehlan());
         telesaBuffer.add(new KomolyJehlan());
-        krivkyBuffer.add(new BikubickaKrivka(Cubic.BEZIER));
+        krivkyBuffer.add(new BikubickaKrivka(typMaticeKrivky));
         xyzOsyBuffer.add(new GizmoXYZ());
     }
 
     private void initMatrices() {
         model = new Mat4Identity();
 
-        Vec3D poziceKamery = new Vec3D(1.5, -5, 2);
+        Vec3D poziceKamery = new Vec3D(2, -12, 4);
         kamera = new Camera()
                 .withPosition(poziceKamery)
-                .withAzimuth(Math.toRadians(Math.PI * 30))
-                .withZenith(Math.toRadians(Math.PI * -4.5))
+                .withAzimuth(Math.toRadians(Math.PI * 25))
+                .withZenith(Math.toRadians(Math.PI * -8.5))
                 .withFirstPerson(false)
-                .withRadius(3);
+                .withRadius(5);
 
         projection = new Mat4PerspRH(
                 Math.PI / 3,

@@ -5,15 +5,15 @@ import transforms.Point3D;
 public class Krychle extends Teleso {
 
     public Krychle() {
-        vrcholBuffer.add(new Vrchol(new Point3D(-1, -1, 1), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(1, -1, 1), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(1, 1, 1), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(-1, 1, 1), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-5, -5, -3), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-3, -5, -3), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-3, -3, -3), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-5, -3, -3), nastavitNahodnouBarvu()));
 
-        vrcholBuffer.add(new Vrchol(new Point3D(-1, -1, -1), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(1, -1, -1), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(1, 1, -1), nastavitNahodnouBarvu()));
-        vrcholBuffer.add(new Vrchol(new Point3D(-1, 1, -1), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-5, -5, -5), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-3, -5, -5), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-3, -3, -5), nastavitNahodnouBarvu()));
+        vrcholBuffer.add(new Vrchol(new Point3D(-5, -3, -5), nastavitNahodnouBarvu()));
 
         indexBuffer.add(0);
         indexBuffer.add(1);
