@@ -39,7 +39,7 @@ public class BikubickaKrivka extends Teleso {
 
         for (double i = 0; i <= 1; i += 0.1) {
             for (double j = 0; j <= 1; j += 0.1) {
-                vrcholBuffer.add(new Vrchol(bikubik.compute(i, j), new Col(60 * (j + 1), 0, 60 * (i + 1))));
+                vrcholBuffer.add(new Vrchol(bikubik.compute(i, j), nastavitNahodnouBarvu()));
             }
         }
 
@@ -49,9 +49,5 @@ public class BikubickaKrivka extends Teleso {
         }
 
         castBuffer.add(new Cast(TypGeometrickeTopologie.USECKA, 0, indexBuffer.size() / 10));
-    }
-
-    public Mat4 getZakladMatice() {
-        return zakladniMatice;
     }
 }
