@@ -119,10 +119,9 @@ public class Renderer3D implements GPURenderer {
 
                     Vrchol v1 = vb.get(i1);
 
-//                    pripravBod(v1);
                     nakresliPixel((int) v1.getX(), (int) v1.getY(), v1.getZ(), v1.getBarva());
                 }
-            } // ...
+            }
         }
     }
 
