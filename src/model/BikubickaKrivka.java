@@ -9,7 +9,6 @@ public class BikubickaKrivka extends Teleso {
 
     public List<Point3D> body = new ArrayList<>();
 
-    Mat4 zakladniMatice;
     Bicubic bikubik;
 
     public BikubickaKrivka(Mat4 zakladniMatice) {
