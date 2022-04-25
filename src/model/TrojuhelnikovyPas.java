@@ -5,29 +5,16 @@ import transforms.Point3D;
 public class TrojuhelnikovyPas extends Teleso {
 
     public TrojuhelnikovyPas() {
-     vrcholBuffer.add(new Vrchol(new Point3D(1,1,2), nastavitNahodnouBarvu()));
-     vrcholBuffer.add(new Vrchol(new Point3D(2,1,2), nastavitNahodnouBarvu()));
-     vrcholBuffer.add(new Vrchol(new Point3D(3,1,3), nastavitNahodnouBarvu()));
-     vrcholBuffer.add(new Vrchol(new Point3D(1.2,1,2), nastavitNahodnouBarvu()));
-     vrcholBuffer.add(new Vrchol(new Point3D(-2,2,3), nastavitNahodnouBarvu()));
-     vrcholBuffer.add(new Vrchol(new Point3D(2.5,1.96,3), nastavitNahodnouBarvu()));
+        for (int i = 1; i < 13; i += 2) {
+            vrcholBuffer.add(new Vrchol(new Point3D(i, 5, 2), nastavitNahodnouBarvu()));
+            vrcholBuffer.add(new Vrchol(new Point3D(i + 2, 8, 2), nastavitNahodnouBarvu()));
+        }
 
-     indexBuffer.add(0);
-     indexBuffer.add(1);
-     indexBuffer.add(2);
+        for (int i = 0; i < 11; i++) {
+            indexBuffer.add(i);
+        }
 
-     indexBuffer.add(2);
-     indexBuffer.add(1);
-     indexBuffer.add(3);
-
-     indexBuffer.add(2);
-     indexBuffer.add(3);
-     indexBuffer.add(4);
-
-     indexBuffer.add(5);
-     indexBuffer.add(4);
-     indexBuffer.add(6);
-
-     castBuffer.add(new Cast(TypGeometrickeTopologie.TRIANGLE_STRIP, 0, 1));
+        castBuffer.add(new Cast(TypGeometrickeTopologie.TRIANGLE_STRIP, 0, 1));
+        castBuffer.add(new Cast(TypGeometrickeTopologie.TRIANGLE_STRIP, 4, 1));
     }
 }

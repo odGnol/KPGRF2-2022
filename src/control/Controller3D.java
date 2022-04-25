@@ -54,6 +54,7 @@ public class Controller3D {
         telesaBuffer.add(new Jehlan());
         telesaBuffer.add(new KomolyJehlan());
         telesaBuffer.add(new TrojuhelnikovyPas());
+        telesaBuffer.add(new TrojuhelnikovyVejir());
         krivkyBuffer.add(new BikubickaKrivka(typMaticeKrivky));
         xyzOsyBuffer.add(new GizmoXYZ());
     }
