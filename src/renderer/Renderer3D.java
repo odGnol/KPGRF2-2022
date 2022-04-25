@@ -406,27 +406,6 @@ public class Renderer3D implements GPURenderer {
         }
     }
 
-    private void pripravBod(Vrchol v1) {
-        Vrchol a = new Vrchol(
-                v1.getBod().mul(model).mul(pohled).mul(projekce),
-                v1.getBarva()
-        );
-
-        if (a.getX() > a.getW()) return; // bod je moc vpravo
-        if (a.getX() < -a.getW()) return; // moc vlevo
-
-        if (a.getY() > a.getW()) return; // moc nahoře
-        if (a.getY() < -a.getW()) return; // moc dole
-
-        if (a.getZ() > a.getW()) return; // moc vzadu/daleko (?)
-        if (a.getZ() < 0) {
-            // je za námi
-        } else {
-            // vidíme celou úsečku
-            nakresliPixel((int) a.getX(), (int) a.getY(), a.getZ(), a.getBarva());
-        }
-    }
-
     private void nakresliPixel(int x, int y, double z, Col barva) {
         Optional<Double> zOptional = depthBuffer.getElement(x, y);
         if (zOptional.isPresent() && zOptional.get() > z) {

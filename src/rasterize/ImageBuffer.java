@@ -19,10 +19,6 @@ public class ImageBuffer implements Raster<Integer> {
         graphics.drawImage(img, 0, 0, null);
     }
 
-    public BufferedImage getImg() {
-        return img;
-    }
-
     public Graphics getGraphics() {
         return img.getGraphics();
     }

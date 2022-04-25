@@ -1,13 +1,10 @@
 package model;
 
-import transforms.Bicubic;
 import transforms.Col;
 import transforms.Mat4;
 import transforms.Mat4Identity;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -23,8 +20,6 @@ public abstract class Teleso {
     final List<Cast> castBuffer = new ArrayList<>();
 
     Mat4 model = new Mat4Identity();
-
-    Color barva;
 
     public Mat4 getModel() {
         return model;
@@ -44,14 +39,6 @@ public abstract class Teleso {
 
     public List<Integer> getIndexy() {
         return indexBuffer;
-    }
-
-    public Color getBarva() {
-        return barva;
-    }
-
-    public void setBarva(Color barva) {
-        this.barva = barva;
     }
 
     public Col nastavitNahodnouBarvu() {

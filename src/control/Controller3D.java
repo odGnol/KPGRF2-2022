@@ -307,11 +307,6 @@ public class Controller3D {
                         maticeTransformace = new Mat4Scale(1.1, 1.1, 1.1);
                     }
 
-                    if (transformaceKrivek) {
-                        krivkyBuffer.get(0).setModel(krivkyBuffer.get(0).getModel().mul(maticeTransformace));
-                    } else {
-                        telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
-                    }
                 } else {
                     if (translace) {
                         maticeTransformace = new Mat4Transl(-1.1, 0, 0);
@@ -323,12 +318,11 @@ public class Controller3D {
                         maticeTransformace = new Mat4Scale(0.9, 0.9, 0.9);
                     }
 
-                    if (transformaceKrivek) {
-                        krivkyBuffer.get(0).setModel(krivkyBuffer.get(0).getModel().mul(maticeTransformace));
-                    } else {
-                        telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
-                    }
-
+                }
+                if (transformaceKrivek) {
+                    krivkyBuffer.get(0).setModel(krivkyBuffer.get(0).getModel().mul(maticeTransformace));
+                } else {
+                    telesaBuffer.get(poziceTelesa).setModel(telesaBuffer.get(poziceTelesa).getModel().mul(maticeTransformace));
                 }
                 zobraz();
             }
