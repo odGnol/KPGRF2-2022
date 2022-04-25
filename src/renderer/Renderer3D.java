@@ -45,6 +45,33 @@ public class Renderer3D implements GPURenderer {
                     Vrchol v3 = vb.get(i3);
                     pripravTrojuhelnik(v1, v2, v3);
                 }
+            } else if (topologyType == TypGeometrickeTopologie.TRIANGLE_STRIP) {
+                for (int i = index; i < pocet * 6 + index; i += 6) {
+                    Integer i1 = ib.get(i);
+                    Integer i2 = ib.get(i + 1);
+                    Integer i3 = ib.get(i + 2);
+                    Integer i4 = ib.get(i + 3);
+                    Integer i5 = ib.get(i + 4);
+                    Integer i6 = ib.get(i + 5);
+
+                    //a
+                    Vrchol v1 = vb.get(i1);
+                    //b
+                    Vrchol v2 = vb.get(i2);
+                    // c
+                    Vrchol v3 = vb.get(i3);
+                    // d
+                    Vrchol v4 = vb.get(i4);
+                    // e
+                    Vrchol v5 = vb.get(i5);
+                    // f
+                    Vrchol v6 = vb.get(i6);
+
+                    pripravTrojuhelnik(v1, v2, v3);
+                    pripravTrojuhelnik(v3, v2, v4);
+                    pripravTrojuhelnik(v3, v4, v5);
+                    pripravTrojuhelnik(v5, v4, v6);
+                }
             } else if (topologyType == TypGeometrickeTopologie.USECKA) {
                 // Doplnění: úsečka
                 for (int i = index; i < pocet * 2; i += 2) {
